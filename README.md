@@ -1,0 +1,2 @@
+# CryptoPredict
+Cryptocurrency price predictor
