@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 
 from keys import keys
 from binance.client import Client
@@ -21,10 +22,11 @@ binance_columns = ['Open Time', 'Open', 'High', 'Low', 'Close',
 """
 The various time intervals provided by binance
 """
-INTERVAL_1MIN = Client.KLINE_INTERVAL_1MINUTE
-INTERVAL_5MIN = Client.KLINE_INTERVAL_5MINUTE
-INTERVAL_15MIN = Client.KLINE_INTERVAL_15MINUTE
-INTERVAL_30MIN = Client.KLINE_INTERVAL_30MINUTE
+INTERVAL_1MINUTE = '1m'
+INTERVAL_5MINUTE = '5m'
+INTERVAL_15MINUTE = '15m'
+INTERVAL_30MINUTE = '30m'
+INTERVAL_1HOUR = '1h'
 
 
 
@@ -32,9 +34,20 @@ INTERVAL_30MIN = Client.KLINE_INTERVAL_30MINUTE
 def get_data_by_intervals(n_iterations, currencies, interval):
     
     """
-    DOWNLOADS DATA FROM BINANCE IN BATCHES OF 500 items.
-    In total will return 500*n_rows - (n_rows+1) and
-    no duplicate data should be present
+    get_data_by_intervals(
+        n_iterations: Integer,
+        currencies: list of currencies to download data,
+        interval: interval of the timeframe (
+            INTERVAL_1MIN,
+            INTERVAL_5MIN,
+            INTERVAL_15MIN,
+            ...
+        )
+    )
+    Description:
+        DOWNLOADS DATA FROM BINANCE IN BATCHES OF 500 items.
+        In total will return 500*n_rows - (n_rows+1) and
+        no duplicate data should be present
 
     INPUTS:
         n_iterations: how many batches of 500 items to download
@@ -54,7 +67,6 @@ def get_data_by_intervals(n_iterations, currencies, interval):
                                   interval=interval, limit=1)[-1][0]
     
     main_df = pd.DataFrame()
-    
     for currency in currencies:
         currency_cols = []
         for col in binance_columns:
@@ -84,7 +96,8 @@ def get_data_by_intervals(n_iterations, currencies, interval):
             specific_currency_df = pd.concat([new_data_df,specific_currency_df[1:]],
                                              ignore_index=True)
             
-        #merging the specific currency created into the main_df were we keep all the data
+        #merging the specific currency created into the main_df
+        # were we keep all the data
         main_df = pd.concat([main_df, specific_currency_df],axis=1)
     return main_df
 
@@ -93,8 +106,10 @@ def get_data_by_intervals(n_iterations, currencies, interval):
 
 def show_time_skips(df, currencies):
     """
-    USED TO CHECK IF THERE ARE ANY SUDDEN JUMPS 
-    IN THE TIMESTAMPS OF THE VARIOUS CURRENCIES
+
+    Description:
+        USED TO CHECK IF THERE ARE ANY SUDDEN JUMPS 
+        IN THE TIMESTAMPS OF THE VARIOUS CURRENCIES
     """
     diff = 0
     df_len = len(df)
@@ -102,11 +117,13 @@ def show_time_skips(df, currencies):
         for currency in currencies:
             if i == 0:
                 #get first time difference to compare with the rest
-                diff = df[currency+' Open Time'].iloc[i+1] - df[currency+' Open Time'].iloc[i]
+                diff = df[currency+' Open Time'].iloc[i+1] - df[
+                    currency+' Open Time'].iloc[i]
             if (df[currency+' Open Time'].iloc[i+1] - df[
                     currency+' Open Time'].iloc[i] != diff):
                 print('Time difference: ',(df[currency+' Open Time'
-                                  ].iloc[i+1] - df[currency+' Open Time'].iloc[i]), currency)
+                                  ].iloc[i+1] - df[
+                                      currency+' Open Time'].iloc[i]), currency)
                 print('time 1: ',df[currency+' Open Time'].iloc[i+1],i+1)
                 print('time 2: ',df[currency+' Open Time'].iloc[i],i)
 
@@ -114,10 +131,16 @@ def show_time_skips(df, currencies):
 
 def keep_one_timestamp(df, currencies):
     """
-    removes repeated timestamps columns, keeping only the first and renaming it 
-    to 'Timestamp'
+    keep_one_timestamp(
+        df = pandas DataFrame object,
+        currencies = list of currencies that are part of df
+    )
+
+    Description:
+        removes repeated timestamps columns, keeping only the first's
+        currencies Close Time and renaming it to 'Timestamp'
     """
-    coins['Timestamp'] = df[currencies[0]+' Close Time']
+    df['Timestamp'] = df[currencies[0]+' Close Time']
     for currency in currencies:
         df.drop([currency+' Open Time',
                  currency+' Close Time'],
