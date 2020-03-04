@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 
-from keys import keys
+import keys
 from binance.client import Client
 
 client = Client(api_key=keys.apiKey, api_secret=keys.secretKey)
@@ -106,7 +106,6 @@ def get_data_by_intervals(n_iterations, currencies, interval):
 
 def show_time_skips(df, currencies):
     """
-
     Description:
         USED TO CHECK IF THERE ARE ANY SUDDEN JUMPS 
         IN THE TIMESTAMPS OF THE VARIOUS CURRENCIES
@@ -119,13 +118,16 @@ def show_time_skips(df, currencies):
                 #get first time difference to compare with the rest
                 diff = df[currency+' Open Time'].iloc[i+1] - df[
                     currency+' Open Time'].iloc[i]
+                print("Nanosec default difference: ", diff)
             if (df[currency+' Open Time'].iloc[i+1] - df[
                     currency+' Open Time'].iloc[i] != diff):
-                print('Time difference: ',(df[currency+' Open Time'
+                print(currency,' Time difference: ',(df[currency+' Open Time'
                                   ].iloc[i+1] - df[
-                                      currency+' Open Time'].iloc[i]), currency)
-                print('time 1: ',df[currency+' Open Time'].iloc[i+1],i+1)
-                print('time 2: ',df[currency+' Open Time'].iloc[i],i)
+                                      currency+' Open Time'].iloc[i]))
+                print('between indexes: ',i,',',i+1)
+                print('gap starts at: ', df[currency+' Open Time'].iloc[i])
+                print('gap ends at:   ', df[currency+' Open Time'].iloc[i+1])
+                print('\n')
 
 
 
