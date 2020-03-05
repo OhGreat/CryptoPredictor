@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 
-import keys
+from keys import keys
 from binance.client import Client
 
 client = Client(api_key=keys.apiKey, api_secret=keys.secretKey)
