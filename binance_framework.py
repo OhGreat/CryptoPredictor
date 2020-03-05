@@ -106,6 +106,11 @@ def get_data_by_intervals(n_iterations, currencies, interval):
 
 def show_time_skips(df, currencies):
     """
+    show_time_skips(
+        df = pandas.DataFrame object
+        currencies = array of currencies, example: ['ETHUSDT','BTCUSDT' ]
+    )
+
     Description:
         USED TO CHECK IF THERE ARE ANY SUDDEN JUMPS 
         IN THE TIMESTAMPS OF THE VARIOUS CURRENCIES
@@ -116,18 +121,17 @@ def show_time_skips(df, currencies):
         for currency in currencies:
             if i == 0:
                 #get first time difference to compare with the rest
-                diff = df[currency+' Open Time'].iloc[i+1] - df[
-                    currency+' Open Time'].iloc[i]
-                print("Nanosec default difference: ", diff)
-            if (df[currency+' Open Time'].iloc[i+1] - df[
-                    currency+' Open Time'].iloc[i] != diff):
-                print(currency,' Time difference: ',(df[currency+' Open Time'
-                                  ].iloc[i+1] - df[
-                                      currency+' Open Time'].iloc[i]))
-                print('between indexes: ',i,',',i+1)
-                print('gap starts at: ', df[currency+' Open Time'].iloc[i])
-                print('gap ends at:   ', df[currency+' Open Time'].iloc[i+1])
+                diff = df[currency+' Close Time'].iloc[i+1] - df[
+                    currency+' Close Time'].iloc[i]
+                print('First time difference is: ',diff)
+            if (df[currency+' Close Time'].iloc[i+1] - df[
+                    currency+' Close Time'].iloc[i] != diff):
                 print('\n')
+                print(currency,'Time difference: ',(df[currency+' Close Time'
+                                  ].iloc[i+1] - df[
+                                      currency+' Close Time'].iloc[i]))
+                print('starting at index: ',i)
+                print('ending at index:   ', i+1)
 
 
 
