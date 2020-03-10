@@ -117,8 +117,12 @@ def show_time_skips(df, currencies):
     """
     diff = 0
     df_len = len(df)
-    for i in range(0,df_len-1):
-        for currency in currencies:
+    arr={}
+    for currency in currencies:
+        arr.update({currency:[0]})
+    for currency in currencies:
+        for i in range(0,df_len-1):
+        
             if i == 0:
                 #get first time difference to compare with the rest
                 diff = df[currency+' Close Time'].iloc[i+1] - df[
@@ -126,15 +130,15 @@ def show_time_skips(df, currencies):
                 print('First time difference is: ',diff)
             if (df[currency+' Close Time'].iloc[i+1] - df[
                     currency+' Close Time'].iloc[i] != diff):
+                
                 print('\n')
                 print(currency,'Time difference: ',(df[currency+' Close Time'
                                   ].iloc[i+1] - df[
                                       currency+' Close Time'].iloc[i]))
                 print('starting at index: ',i)
                 print('ending at index:   ', i+1)
-
-
-
+                print('total frames since previous timeskip: ', i-(arr[currency][-1]))
+                arr[currency].append(i)
 
 
 def keep_one_timestamp(df, currencies):
